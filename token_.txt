@@ -1,0 +1,23 @@
+-- Table: public.UserToken
+
+-- DROP TABLE public."UserToken";
+
+CREATE TABLE public."UserToken"
+(
+    "Id" integer NOT NULL,
+    "UserId" integer NOT NULL,
+    "DevideId" text COLLATE pg_catalog."default",
+    "TokenValue" text COLLATE pg_catalog."default",
+    "LogDate" date,
+    "IsActive" bit(1),
+    CONSTRAINT "UserId" FOREIGN KEY ("UserId")
+        REFERENCES public."User" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public."UserToken"
+    OWNER to postgres;

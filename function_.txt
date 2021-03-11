@@ -1,0 +1,23 @@
+-- FUNCTION: public.fnc_register(text, text, text, text, timestamp without time zone, integer)
+
+-- DROP FUNCTION public.fnc_register(text, text, text, text, timestamp without time zone, integer);
+
+CREATE OR REPLACE FUNCTION public.fnc_register(
+	username text,
+	password1 text,
+	firstname text,
+	lastname text,
+	logdate timestamp without time zone,
+	isactive integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+       insert into public."User" VALUES (DEFAULT,username,password1,firstname,lastname,logdate,isactive);
+end;
+$BODY$;
+
+ALTER FUNCTION public.fnc_register(text, text, text, text, timestamp without time zone, integer)
+    OWNER TO postgres;

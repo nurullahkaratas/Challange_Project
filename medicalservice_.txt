@@ -1,0 +1,22 @@
+-- Table: public.MedicalService
+
+-- DROP TABLE public."MedicalService";
+
+CREATE TABLE public."MedicalService"
+(
+    "Id" integer NOT NULL,
+    "MedicalServiceName" text COLLATE pg_catalog."default",
+    "LogDate" date,
+    "IsActive" bit(1),
+    "UserId" integer,
+    CONSTRAINT "MedicalService_pkey" PRIMARY KEY ("Id"),
+    CONSTRAINT "UserId" FOREIGN KEY ("UserId")
+        REFERENCES public."User" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public."MedicalService"
+    OWNER to postgres;

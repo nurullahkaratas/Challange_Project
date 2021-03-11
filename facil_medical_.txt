@@ -1,0 +1,31 @@
+-- Table: public.FacilityMedicalServices
+
+-- DROP TABLE public."FacilityMedicalServices";
+
+CREATE TABLE public."FacilityMedicalServices"
+(
+    "Id" integer NOT NULL,
+    "FacilityId" integer,
+    "MedicalServiceId" integer,
+    "LogDate" date,
+    "UserId" integer,
+    CONSTRAINT "FacilityMedicalServices_pkey" PRIMARY KEY ("Id"),
+    CONSTRAINT "FacilityId" FOREIGN KEY ("FacilityId")
+        REFERENCES public."Facility" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "MedicalServiceId" FOREIGN KEY ("MedicalServiceId")
+        REFERENCES public."MedicalService" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT "UserId" FOREIGN KEY ("UserId")
+        REFERENCES public."User" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public."FacilityMedicalServices"
+    OWNER to postgres;
