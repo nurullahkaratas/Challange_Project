@@ -15,25 +15,23 @@ namespace WebApplication3.Controllers
     public class UserController : ApiController
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
-        
-        // GET: User
 
-        [HttpGet]
-        public void GetUsersCount()
-        {
-        
-        }
-
-        // POST: User/Create
         [HttpPost]
         
         public bool Create([System.Web.Http.FromBody] UserRequest user)
         {
             if(ModelState.IsValid)
             {
-                dataAccess.Register(user.Username, user.Password, user.Firstname, user.Lastname, user.IsActive);
+                int res=dataAccess.fn_Register(user.Username, user.Password, user.Firstname, user.Lastname, user.IsActive);
 
-                return true;
+                if (res==1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -41,10 +39,30 @@ namespace WebApplication3.Controllers
             }
         }
 
-        // GET: User/Edit/5
-        public HttpResponseMessage Edit(int id)
+        [HttpPost]
+        public string Login(string username,string password)
         {
-            return new HttpResponseMessage();
+
+            int userid= dataAccess.fn_Login(username, password);
+            if (userid!=0)
+            {
+                var token = Guid.NewGuid().ToString();
+                dataAccess.fn_AddToken(userid, token, null);
+                return token;
+            }
+            return "Login Failed";
+        }
+
+        [HttpPost]
+        public string Logout(string deviceid, string tokenvalue)
+        {
+
+            int isActive = dataAccess.fn_Logout(deviceid, tokenvalue);
+            if (isActive ==0)
+            {
+                return "Logout Successful";
+            }
+            return "Logout Failed Check Params";
         }
     }
 }
