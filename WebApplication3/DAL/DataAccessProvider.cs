@@ -66,7 +66,7 @@ namespace WebApplication3.DAL
             conn.Close();
             return (int)res;
         }
-        public int fn_ChangePassword(string newPasswrod,string deviceId, string token)
+        public bool fn_ChangePassword(string newPassword,string deviceId, string token)
         {
             NpgsqlConnection conn = new NpgsqlConnection("User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=Acibadem_Chal;");
             conn.Open();
@@ -74,13 +74,13 @@ namespace WebApplication3.DAL
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = conn;
             cmd.CommandText = "public.fnc_changepassword";
-            cmd.Parameters.AddWithValue("newpassword", newPasswrod);
+            cmd.Parameters.AddWithValue("newpassword", newPassword);
             cmd.Parameters.AddWithValue("deviceid", deviceId);
             cmd.Parameters.AddWithValue("tokenvalue", token.ToString());
             cmd.Prepare();
             var res = cmd.ExecuteScalar();
             conn.Close();
-            return (int)res;
+            return (bool)res;
         }
 
 

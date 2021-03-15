@@ -66,16 +66,21 @@ namespace WebApplication3.Controllers
         }
 
         [HttpPost]
-        public int ChangePassword([FromBody] TokenHelper tk)
+        public IHttpActionResult ChangePassword([FromBody] TokenHelper tk)
         {
             var re = Request;
             var headers = re.Headers;
-            if (headers.Contains("Custom"))
+            
+            if (headers.Contains("token"))
             {
-                tk.token = headers.GetValues("Custom").First();
-                tk.deviceid = headers.GetValues("Custom2").First();
+                tk.token = headers.GetValues("token").First();
+
+                tk.deviceid = headers.GetValues("deviceid").First();
+                var  res=dataAccess.fn_ChangePassword(tk.value, tk.deviceid, tk.token);
+                return Ok(res);
             }
-            return dataAccess.fn_ChangePassword(tk.value,tk.token, tk.deviceid);
+            return Unauthorized();
+            
           
         }
     }
