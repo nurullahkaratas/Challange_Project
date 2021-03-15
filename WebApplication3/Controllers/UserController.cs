@@ -64,5 +64,19 @@ namespace WebApplication3.Controllers
             }
             return "Logout Failed Check Params";
         }
+
+        [HttpPost]
+        public int ChangePassword([FromBody] TokenHelper tk)
+        {
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Custom"))
+            {
+                tk.token = headers.GetValues("Custom").First();
+                tk.deviceid = headers.GetValues("Custom2").First();
+            }
+            return dataAccess.fn_ChangePassword(tk.value,tk.token, tk.deviceid);
+          
+        }
     }
 }
