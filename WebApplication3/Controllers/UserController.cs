@@ -11,32 +11,26 @@ using WebApplication3.Models.RequestModels;
 namespace WebApplication3.Controllers
 {
     
-    
+  [Security]
     public class UserController : ApiController
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
 
         [HttpPost]
         
-        public bool Create([System.Web.Http.FromBody] UserRequest user)
+        public IHttpActionResult Create([FromBody] UserRequest user)
         {
             if(ModelState.IsValid)
             {
-                int res=dataAccess.fn_Register(user.Username, user.Password, user.Firstname, user.Lastname, user.IsActive);
-
-                if (res==1)
+              var response= dataAccess.fn_Register(user.Username, user.Password, user.Firstname, user.Lastname, user.IsActive);
+                if (response==true)
                 {
-                    return true;
+                    return Ok();
                 }
-                else
-                {
-                    return false;
-                }
+                return Conflict();
+               
             }
-            else
-            {
-                return false;
-            }
+            return BadRequest();
         }
 
         [HttpPost]
@@ -44,44 +38,72 @@ namespace WebApplication3.Controllers
         {
 
             int userid= dataAccess.fn_Login(username, password);
-            if (userid!=0)
+            if (userid!=-1)
             {
                 var token = Guid.NewGuid().ToString();
                 dataAccess.fn_AddToken(userid, token, null);
                 return token;
             }
-            return "Login Failed";
+            return "Login failed, check username and password";
         }
 
         [HttpPost]
-        public string Logout(string deviceid, string tokenvalue)
+        [Security]
+        public IHttpActionResult Logout()
         {
-
-            int isActive = dataAccess.fn_Logout(deviceid, tokenvalue);
-            if (isActive ==0)
-            {
-                return "Logout Successful";
-            }
-            return "Logout Failed Check Params";
+            var headers = Request.Headers;
+            var token = headers.GetValues("token").First();
+            var deviceid = headers.GetValues("deviceid").First();
+            int isActive = dataAccess.fn_Logout(deviceid, token);
+                if (isActive == 0)
+                {
+                    return Ok();
+                }
+                return BadRequest();
+   
         }
 
         [HttpPost]
-        public IHttpActionResult ChangePassword([FromBody] TokenHelper tk)
-        {
-            var re = Request;
-            var headers = re.Headers;
-            
-            if (headers.Contains("token"))
-            {
-                tk.token = headers.GetValues("token").First();
+        
+        public IHttpActionResult ChangePassword(string newPassword)
+        { 
+            var token = TokenHelper.FindToken(Request);
+            var deviceid = TokenHelper.FindDeviceId(Request);
 
-                tk.deviceid = headers.GetValues("deviceid").First();
-                var  res=dataAccess.fn_ChangePassword(tk.value, tk.deviceid, tk.token);
-                return Ok(res);
+            if (!String.IsNullOrEmpty(token)&&!String.IsNullOrEmpty(deviceid))
+            {
+               var response= dataAccess.fn_ChangePassword(newPassword, deviceid, token);
+                if (response == true)
+                {
+                    return Ok();
+                }
+                return BadRequest();
             }
             return Unauthorized();
-            
-          
         }
+
+        //[HttpPost]
+        //[Security]
+        //public IHttpActionResult Logout()
+        //{
+        //    var request = Request;
+        //    var headers = request.Headers;
+        //    if (headers.Contains("token") && headers.Contains("deviceid"))
+        //    {
+        //        var token = headers.GetValues("token").First();
+        //        var deviceid = headers.GetValues("deviceid").First();
+        //        int isActive = dataAccess.fn_Logout(deviceid, token);
+        //        if (isActive == 0)
+        //        {
+        //            return Ok();
+        //        }
+        //        return BadRequest();
+        //    }
+        //    return Unauthorized();
+        //}
+
+
     }
 }
+    
+

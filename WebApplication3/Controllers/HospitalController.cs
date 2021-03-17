@@ -14,28 +14,58 @@ namespace WebApplication3.Controllers
     public class HospitalController : ApiController
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
-
+        
         [HttpPost]
-        public bool CreateFacility(string facilityname,string token,string deviceid)
+        public IHttpActionResult CreateFacility(string facilityname)
         {
-
-            return dataAccess.fn_CreateFacility(facilityname, deviceid, token);
+            var token=TokenHelper.FindToken(Request);
+            var deviceid = TokenHelper.FindDeviceId(Request);
+            if (!String.IsNullOrEmpty(deviceid)&&!String.IsNullOrEmpty(token))
+            {
+              var response= dataAccess.fn_CreateFacility(facilityname, deviceid, token);
+                if (response==true)
+                {
+                    return Ok();
+                }
+                return BadRequest();
+            }
+            return Unauthorized();
         }
 
 
         [HttpPost]
-        public bool CreateMedicalService(string medicalservice, string token, string deviceid)
+        public IHttpActionResult CreateMedicalService(string medicalservice)
         {
-
-            return dataAccess.fn_CreateMedicalService(medicalservice, deviceid, token);
+            var token = TokenHelper.FindToken(Request);
+            var deviceid = TokenHelper.FindDeviceId(Request);
+            if (!String.IsNullOrEmpty(deviceid) && !String.IsNullOrEmpty(token))
+            {
+              var response= dataAccess.fn_CreateMedicalService(medicalservice, deviceid, token);
+                if (response == true)
+                {
+                    return Ok();
+                }
+                return BadRequest();
+            }
+            return Unauthorized();
         }
 
 
         [HttpPost]
-        public bool CreateFacilityMedicalService(int facilityid,int medicalservice, string token, string deviceid)
+        public IHttpActionResult CreateFacilityMedicalService(int facilityid,int medicalservice)
         {
-
-            return dataAccess.fn_CreateFacilityMedicalService(facilityid,medicalservice, deviceid, token);
+            var token = TokenHelper.FindToken(Request);
+            var deviceid = TokenHelper.FindDeviceId(Request);
+            if (!String.IsNullOrEmpty(deviceid) && !String.IsNullOrEmpty(token))
+            {
+               var response= dataAccess.fn_CreateFacilityMedicalService(facilityid, medicalservice, deviceid, token);
+                if (response == true)
+                {
+                    return Ok();
+                }
+                return BadRequest();
+            }
+            return Unauthorized();
         }
 
 

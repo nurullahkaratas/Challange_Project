@@ -13,25 +13,24 @@ namespace WebApplication3.DAL
 {
     public class DataAccessProvider
     {
-        public int fn_Register(string username, string password, string firstname, string lastname, int isActive)
-        {
-
+        public bool fn_Register(string username, string password, string firstname, string lastname, int isActive)
+        {        
             NpgsqlConnection conn = new NpgsqlConnection("User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=Acibadem_Chal;");
             conn.Open();
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = conn;
-            cmd.CommandText = "public.fnc_register2";
+            cmd.CommandText = "public.fnc_register";
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("password1", password);
             cmd.Parameters.AddWithValue("firstname", firstname);
             cmd.Parameters.AddWithValue("lastname", lastname);
             cmd.Parameters.AddWithValue("logdate", DateTime.Now);
-            cmd.Parameters.AddWithValue("isactive", isActive);
+            cmd.Parameters.AddWithValue("isactive", isActive = 1);
             cmd.Prepare();
             var res = cmd.ExecuteScalar();
             conn.Close();
-            return (int)res;
+            return (bool)res;
         }
         public int fn_Login(string username, string password)
         {
@@ -117,7 +116,7 @@ namespace WebApplication3.DAL
 
         }
 
-        public bool fn_CheckToken(string deviceId, string token)
+        public int fn_CheckToken(string deviceId, string token)
         {
             NpgsqlConnection conn = new NpgsqlConnection("User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=Acibadem_Chal;");
             conn.Open();
@@ -130,7 +129,7 @@ namespace WebApplication3.DAL
             cmd.Prepare();
             var res = cmd.ExecuteScalar();
             conn.Close();
-            return (bool)res;
+            return (int)res;
         }
 
         public bool fn_CreateFacility(string facilityname,string deviceId, string token)
