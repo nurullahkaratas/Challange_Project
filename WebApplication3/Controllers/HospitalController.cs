@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
@@ -14,61 +15,60 @@ namespace WebApplication3.Controllers
     public class HospitalController : ApiController
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
-        
-        [HttpPost]
-        [Security]
-        public IHttpActionResult CreateFacility(string facilityname)
-        {
-            var token=TokenHelper.FindToken(Request);
-            var deviceid = TokenHelper.FindDeviceId(Request);
-            if (!String.IsNullOrEmpty(deviceid)&&!String.IsNullOrEmpty(token))
-            {
-              var response= dataAccess.fn_CreateFacility(facilityname, deviceid, token);
-                if (response==true)
-                {
-                    return Ok();
-                }
-                return BadRequest();
-            }
-            return Unauthorized();
-        }
-
 
         [HttpPost]
         [Security]
-        public IHttpActionResult CreateMedicalService(string medicalservice)
+        public HttpResponseMessage CreateFacility(string facilityname)
         {
             var token = TokenHelper.FindToken(Request);
             var deviceid = TokenHelper.FindDeviceId(Request);
             if (!String.IsNullOrEmpty(deviceid) && !String.IsNullOrEmpty(token))
             {
-              var response= dataAccess.fn_CreateMedicalService(medicalservice, deviceid, token);
+                var response = dataAccess.fn_CreateFacility(facilityname, deviceid, token);
                 if (response == true)
                 {
-                    return Ok();
+                    return DefaultResponse.GetResponse(HttpStatusCode.OK);
                 }
-                return BadRequest();
+                return DefaultResponse.GetResponse(HttpStatusCode.Unauthorized);
             }
-            return Unauthorized();
+            return DefaultResponse.GetResponse(HttpStatusCode.BadRequest);
         }
-
 
         [HttpPost]
         [Security]
-        public IHttpActionResult CreateFacilityMedicalService(int facilityid,int medicalservice)
+        public HttpResponseMessage CreateMedicalService(string medicalservice)
         {
             var token = TokenHelper.FindToken(Request);
             var deviceid = TokenHelper.FindDeviceId(Request);
             if (!String.IsNullOrEmpty(deviceid) && !String.IsNullOrEmpty(token))
             {
-               var response= dataAccess.fn_CreateFacilityMedicalService(facilityid, medicalservice, deviceid, token);
+                var response = dataAccess.fn_CreateMedicalService(medicalservice, deviceid, token);
                 if (response == true)
                 {
-                    return Ok();
+                    return DefaultResponse.GetResponse(HttpStatusCode.OK);
                 }
-                return BadRequest();
+                return DefaultResponse.GetResponse(HttpStatusCode.Unauthorized);
             }
-            return Unauthorized();
+            return DefaultResponse.GetResponse(HttpStatusCode.BadRequest);
+        }
+
+
+        [HttpPost]
+        [Security]
+        public HttpResponseMessage CreateFacilityMedicalService(int facilityid, int medicalservice)
+        {
+            var token = TokenHelper.FindToken(Request);
+            var deviceid = TokenHelper.FindDeviceId(Request);
+            if (!String.IsNullOrEmpty(deviceid) && !String.IsNullOrEmpty(token))
+            {
+                var response = dataAccess.fn_CreateFacilityMedicalService(facilityid, medicalservice, deviceid, token);
+                if (response == true)
+                {
+                    return DefaultResponse.GetResponse(HttpStatusCode.OK);
+                }
+                return DefaultResponse.GetResponse(HttpStatusCode.Unauthorized);
+            }
+            return DefaultResponse.GetResponse(HttpStatusCode.BadRequest);
         }
 
 
@@ -78,8 +78,5 @@ namespace WebApplication3.Controllers
         {
             return dataAccess.fn_GetFacilities();
         }
-
-
-
     }
 }

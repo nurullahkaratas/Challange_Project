@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web;
 using System.Web.Http;
 using WebApplication3.DAL;
 using WebApplication3.Models;
 using WebApplication3.Models.RequestModels;
+using WebApplication3.Models.ResponseModels;
 
 namespace WebApplication3.Controllers
 {
@@ -15,71 +18,46 @@ namespace WebApplication3.Controllers
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
 
-        [HttpPost]
-        
-        public IHttpActionResult Create([FromBody] UserRequest user)
-        {
-            if(ModelState.IsValid)
-            {
-              var response= dataAccess.fn_Register(user.Username, user.Password, user.Firstname, user.Lastname, user.IsActive);
-                if (response==true)
-                {
-                    return Ok();
-                }
-                return Conflict();
-               
-            }
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public string Login(string username,string password)
-        {
-
-            int userid= dataAccess.fn_Login(username, password);
-            if (userid!=-1)
-            {
-                var token = Guid.NewGuid().ToString();
-                dataAccess.fn_AddToken(userid, token, null);
-                return token;
-            }
-            return "Login failed, check username and password";
-        }
 
         [HttpPost]
         [Security]
-        public IHttpActionResult Logout()
+        public HttpResponseMessage Logout()
         {
             var headers = Request.Headers;
             var token = headers.GetValues("token").First();
             var deviceid = headers.GetValues("deviceid").First();
-            int isActive = dataAccess.fn_Logout(deviceid, token);
-                if (isActive == 0)
+            if (!String.IsNullOrEmpty(token) && !String.IsNullOrEmpty(deviceid))
+            {
+                int isActive = dataAccess.fn_Logout(deviceid, token);
+              
+                if (isActive !=-1)
                 {
-                    return Ok();
+                    return DefaultResponse.GetResponse(HttpStatusCode.OK);
                 }
-                return BadRequest();
-   
+                return DefaultResponse.GetResponse(HttpStatusCode.Unauthorized);
+            }
+            return DefaultResponse.GetResponse(HttpStatusCode.BadRequest);
         }
 
         [HttpPost]
         [Security]
-        public IHttpActionResult ChangePassword(string newPassword)
-        { 
+        public HttpResponseMessage ChangePassword(string newPassword)
+        {
             var token = TokenHelper.FindToken(Request);
             var deviceid = TokenHelper.FindDeviceId(Request);
 
-            if (!String.IsNullOrEmpty(token)&&!String.IsNullOrEmpty(deviceid))
+            if (!String.IsNullOrEmpty(token) && !String.IsNullOrEmpty(deviceid))
             {
-               var response= dataAccess.fn_ChangePassword(newPassword, deviceid, token);
+                var response = dataAccess.fn_ChangePassword(newPassword, deviceid, token);
                 if (response == true)
-                {
-                    return Ok();
+                {                  
+                  return DefaultResponse.GetResponse(HttpStatusCode.OK);
                 }
-                return BadRequest();
+                return DefaultResponse.GetResponse(HttpStatusCode.Unauthorized);
             }
-            return Unauthorized();
+            return DefaultResponse.GetResponse(HttpStatusCode.BadRequest);
         }
+    }
 
         //[HttpPost]
         //[Security]
@@ -102,7 +80,7 @@ namespace WebApplication3.Controllers
         //}
 
 
-    }
 }
-    
+
+
 

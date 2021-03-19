@@ -5,9 +5,9 @@ using System.Web;
 
 namespace WebApplication3.Models.RequestModels
 {
-    public class FacilityRq
+    public class MedicalServiceRq
     {
-        public string FacilityName { get; set; }
+        public string Name { get; set; }
 
     }
 }
