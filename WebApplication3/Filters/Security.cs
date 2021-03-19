@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web;
@@ -12,7 +13,7 @@ using WebApplication3.Models.ResponseModels;
 
 namespace WebApplication3.Models
 {
-    public class SecurityAttribute: ActionFilterAttribute//,IActionFilter
+    public class SecurityAttribute: ActionFilterAttribute
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
         public override void OnActionExecuting(HttpActionContext filterContext)
@@ -20,7 +21,7 @@ namespace WebApplication3.Models
             var token = filterContext.Request.Headers.GetValues("token").First();
             var deviceid = filterContext.Request.Headers.GetValues("deviceid").First();
 
-            var isValidToken=dataAccess.fn_CheckToken(token, deviceid);
+            var isValidToken=dataAccess.fn_CheckToken(deviceid, token);
             if (isValidToken!=-1)
             {
             base.OnActionExecuting(filterContext);
@@ -28,7 +29,8 @@ namespace WebApplication3.Models
             }
             else
             {
-                var message = new HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized)
+                //new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                var message = new HttpResponseMessage(HttpStatusCode.Unauthorized)
                 {
                     Content = new ObjectContent<DefaultResponse>(new DefaultResponse()
                     {
@@ -37,11 +39,9 @@ namespace WebApplication3.Models
                         MessageDetail = "Access is denied due to invalid credentials."
                     }, new JsonMediaTypeFormatter())
                 };
-              // throw new HttpResponseException(message);
-
+                throw new HttpResponseException(message);
             }
 
-            //httpresponnseexpception
         }
     }
 }

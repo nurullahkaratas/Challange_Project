@@ -151,8 +151,8 @@
     <Compile Include="Models\RequestModels\UserRequest.cs" />
     <Compile Include="Models\ResponseModels\DefaultResponse.cs" />
     <Compile Include="Models\ResponseModels\FacilityMedicalServices.cs" />
-    <Compile Include="Models\Security.cs" />
-    <Compile Include="Models\TokenHelper.cs" />
+    <Compile Include="Filters\Security.cs" />
+    <Compile Include="Helpers\TokenHelper.cs" />
     <Compile Include="Models\ResponseModels\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

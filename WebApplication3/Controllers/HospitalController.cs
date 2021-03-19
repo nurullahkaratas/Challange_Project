@@ -16,6 +16,7 @@ namespace WebApplication3.Controllers
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
         
         [HttpPost]
+        [Security]
         public IHttpActionResult CreateFacility(string facilityname)
         {
             var token=TokenHelper.FindToken(Request);
@@ -34,6 +35,7 @@ namespace WebApplication3.Controllers
 
 
         [HttpPost]
+        [Security]
         public IHttpActionResult CreateMedicalService(string medicalservice)
         {
             var token = TokenHelper.FindToken(Request);
@@ -52,6 +54,7 @@ namespace WebApplication3.Controllers
 
 
         [HttpPost]
+        [Security]
         public IHttpActionResult CreateFacilityMedicalService(int facilityid,int medicalservice)
         {
             var token = TokenHelper.FindToken(Request);
@@ -70,6 +73,7 @@ namespace WebApplication3.Controllers
 
 
         [HttpGet]
+        [Security]
         public List<FacilityMedicalServices> GetFacilities()
         {
             return dataAccess.fn_GetFacilities();

@@ -10,8 +10,7 @@ using WebApplication3.Models.RequestModels;
 
 namespace WebApplication3.Controllers
 {
-    
-  [Security]
+
     public class UserController : ApiController
     {
         DAL.DataAccessProvider dataAccess = new DataAccessProvider();
@@ -64,7 +63,7 @@ namespace WebApplication3.Controllers
         }
 
         [HttpPost]
-        
+        [Security]
         public IHttpActionResult ChangePassword(string newPassword)
         { 
             var token = TokenHelper.FindToken(Request);
